@@ -38,10 +38,12 @@ const columns = [
   {
     key: "balance",
     displayName: "Balance",
+    filterable: true,
   },
   {
     key: "birthday",
     displayName: "Born",
+    filterable: false,
   },
 ];
 
@@ -51,7 +53,7 @@ export default class Application extends React.Component {
       <div id="container">
         <h1>here's the table</h1>
         <div>
-          <HzTable rows={rows} columns={columns} />
+          <HzTable rows={rows} columns={columns} filterable={true} />
         </div>
       </div>
     );

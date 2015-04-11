@@ -1,28 +1,48 @@
 import React from 'react';
+import HzTableRow from '../HzTableRow';
+import HzTableParser from '../HzTableParser';
+import HzTableColumn from '../HzTableColumn';
 
 export default class HzTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {test: true};
+    
+    this.setRows();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setRows();
+  }
+
+  setRows() {
+    this.rows = HzTableParser.parseRows(this.props.rows);
+  }
+
   render() {
     return (
       <table className="pure-table">
-        {this.renderHeader()}
-        {this.renderBody()}
+        {this.renderThead()}
+        {this.renderTbody()}
       </table>
     );
   }
 
-  renderHeader() {
+  renderThead() {
+    const ths = this.props.columns.map((column) => {
+      return <HzTableColumn column={column} filterable={this.props.filterable} />
+    });
+
     return (
       <thead>
         <tr>
-          <th>1</th>
-          <th>2</th>
-          <th>3</th>
+          {ths}
         </tr>
       </thead>
     );
   }
   
-  renderBody() {
+  renderTbody() {
     return (
       <tbody>
         {this.renderRows()}
@@ -31,32 +51,18 @@ export default class HzTable extends React.Component {
   }
   
   renderRows() {
-    return [
-      (<tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-      </tr>),
-      (<tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-      </tr>),
-      (<tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-      </tr>),
-      (<tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-      </tr>),
-      (<tr>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-      </tr>),
-    ];
+    return this.rows.map((row) => {
+      return <HzTableRow row={row} columns={this.props.columns} />
+    });
   }
 }
+
+HzTable.propTypes = {
+  rows: React.PropTypes.array.isRequired,
+  columns: React.PropTypes.array,
+  filterable: React.PropTypes.bool,
+};
+
+HzTable.defaultProps = {
+  filterable: false,
+};
