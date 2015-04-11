@@ -21,9 +21,8 @@ export default class HzTableParser {
       const str = value.toString();
       return {
         displayValue: str,
-        value: str,
+        internalValue: str,
       };
     }
   }
-    
 }
