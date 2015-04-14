@@ -45,7 +45,7 @@ export default class HzTableUtils {
     } else {
       return cell => {
         return cell.internalValue.toLowerCase().indexOf(trimmed) >= 0 || cell.displayValue.toLowerCase().indexOf(trimmed) >= 0;
-      }
+      };
     }
   }
 

@@ -15,6 +15,7 @@
   "author": "Brad Daily <brad@bradleyboy.com>",
   "license": "MIT",
   "dependencies": {
+    "babel": "^5.1.9",
     "react": "~0.13.0"
   },
   "devDependencies": {

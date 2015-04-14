@@ -1,3 +1,5 @@
+require("babel/register");
+
 import React from 'react';
 import HzTable from '../HzTable';
 

@@ -1,0 +1,25 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    "strict": 0,
+    "comma-dangle": [2, "always-multiline"],
+    "quotes": "single",
+    "no-underscore-dangle": 0,
+    "no-console": 0,
+    'no-trailing-spaces': 0,
+    'no-unused-vars': [2, {'args': 'none'}],
+    'curly': 2,
+    "brace-style": [2, "1tbs", {"allowSingleLine": false}],
+    'space-before-blocks': [2, 'always'],
+    'space-after-keywords': [2, 'always'],
+    'space-in-brackets': [2, 'never'],
+    'space-in-parens': [2, 'never'],
+  },
+  "globals": {
+    "require": true,
+    "document": true,
+  },
+  "env": {
+    "browser": true,
+  },
+}

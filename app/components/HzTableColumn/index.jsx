@@ -41,4 +41,4 @@ HzTableColumn.propTypes = {
   sortable: React.PropTypes.bool.isRequired,
   onOrderChanged: React.PropTypes.func.isRequired,
   onFilterChanged: React.PropTypes.func.isRequired,
-}
+};
