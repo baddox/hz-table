@@ -1,5 +1,5 @@
 import React from 'react';
-//import HzTableSorter from '../HzTableSorter';
+import HzTableUtils from '../HzTableUtils';
 
 const UP_OFF = '△';
 const UP_ON = '▲';
@@ -50,7 +50,9 @@ export default class HzTableSorter extends React.Component {
     const i = ORDERS.indexOf(this.state.order);
     const newOrder = ORDERS[(i + 1) % ORDERS.length];
 
-    this.props.onOrderChanged(newOrder);
+    const sortFunc = HzTableUtils.generateSortFunc(newOrder);
+
+    this.props.onOrderChanged(sortFunc);
     this.setState({order: newOrder});
   }
 }

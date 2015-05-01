@@ -31,8 +31,20 @@ export default class HzTableUtils {
   }
 
   static sortRows(rows, sortFuncs) {
-    // TODO
-    return rows;
+    // Right now just supporting one column and func to sort by.
+    const columnKey = Object.keys(sortFuncs)[0];
+    const sortFunc = sortFuncs[columnKey];
+
+    if (typeof sortFunc === "function") {
+      // slice() makes a shallow copy. Needed because JavaScript sort() is destructive.
+      return rows.slice().sort((rowA, rowB) => {
+        const cellA = rowA[columnKey];
+        const cellB = rowB[columnKey];
+        return sortFunc(cellA, cellB);
+      });
+    } else {
+      return rows;
+    }
   }
 
   static generateFilterFunc(filterText) {
@@ -49,4 +61,28 @@ export default class HzTableUtils {
     }
   }
 
+  static generateSortFunc(order) {
+    const makeSortFunc = multiplier => {
+      return (cellA, cellB) => {
+        const valA = cellA.internalValue;
+        const valB = cellB.internalValue;
+        if (valA > valB) {
+          return 1 * multiplier;
+        } else if (valA < valB) {
+          return -1 * multiplier;
+        } else {
+          return 0;
+        }
+      };
+    };
+    
+    switch (order) {
+    case "asc":
+      return makeSortFunc(1);
+    case "desc":
+      return makeSortFunc(-1);
+    case null:
+      return null;
+    }
+  }
 }

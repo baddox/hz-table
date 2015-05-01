@@ -6,6 +6,8 @@ import HzTableColumn from '../HzTableColumn';
 import HzTableParser from '../HzTableParser';
 import HzTableUtils from '../HzTableUtils';
 
+import HzTableUtils2 from '../HzFoo';
+
 export default class HzTable extends React.Component {
   constructor(props) {
     super(props);
@@ -92,12 +94,11 @@ export default class HzTable extends React.Component {
   }
 
   handleOrderChanged(column, sortFunc) {
-    console.log("order", column);
-
-    const sortFuncs = this.state.sortFuncs;
-    sortFuncs[column.key] = sortFunc;
-    
-    this.setState({sortFuncs: sortFuncs});
+    if (sortFunc) {
+      this.setState({sortFuncs: {[column.key]: sortFunc}});
+    } else {
+      this.setState({sortFuncs: {}});
+    }
   }
   
   handleFilterChanged(column, filterFunc) {

@@ -14,7 +14,7 @@ export default class HzTableColumn extends React.Component {
   }
 
   renderSorter() {
-    return this.getOption("sortable") ? <HzTableSorter order={"asc"} onOrderChanged={this.props.onOrderChanged} /> : null;
+    return this.getOption("sortable") ? <HzTableSorter order={"asc"} onOrderChanged={this.props.onOrderChanged.bind(this, this.props.column)} /> : null;
   }
 
   renderFilter() {
