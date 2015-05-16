@@ -11,9 +11,14 @@ export default class HzTableRow extends React.Component {
   }
 
   renderCells() {
-    return this.props.columns.map((column, index) => {
-      const cell = this.props.row[column.key];
-      return <HzTableCell cell={cell} column={column} key={index} />;
+    return this.props.columns.map((parsedColumn, index) => {
+      const cell = this.props.row[parsedColumn.column.key];
+      return <HzTableCell cell={cell} column={parsedColumn} key={index} />;
     });
   }
 }
+
+HzTableRow.propTypes = {
+  row: React.PropTypes.object.isRequired,
+  columns: React.PropTypes.array.isRequired,
+};

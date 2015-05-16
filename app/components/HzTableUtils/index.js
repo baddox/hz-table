@@ -1,27 +1,17 @@
 import React from 'react';
 
-//import HzTableUtils from '../HzTableUtils';
+const FILTER_OPERATORS = [">", "<"];
 
 export default class HzTableUtils {
 
-  static filterRows(rows, filterFuncs) {
-    // Values of filterFuncs take a cell. We need funcs that take a row.
-    const rowFuncs = [];
-    
-    Object.keys(filterFuncs).forEach(function (columnKey) {
-      const func = row => {
-        console.log("row", columnKey, row);
-        return filterFuncs[columnKey](row[columnKey]);
-      };
-      rowFuncs.push(func);
-    });
+  static filterRows(rows, parsedColumnsByKey, filters) {
+    return rows.filter(row => {
+      for (let key of Object.keys(filters)) {
+        const filter = filters[key];
+        const parsedColumn = parsedColumnsByKey[key];
+        const cell = row[key];
 
-    return rows.filter((row) => {
-      // If any func returns false, reject the row, otherwise accept the row.
-      
-      for (let func of rowFuncs) {
-        if (!func(row)) {
-          console.log("FAILED FILTER", row, func);
+        if (!parsedColumn.filterer(filter, cell.cellData, cell.parsedCellData)) {
           return false;
         }
       }
@@ -30,59 +20,48 @@ export default class HzTableUtils {
     });
   }
 
-  static sortRows(rows, sortFuncs) {
+  static sortRows(rows, parsedColumnsByKey, sorts) {
     // Right now just supporting one column and func to sort by.
-    const columnKey = Object.keys(sortFuncs)[0];
-    const sortFunc = sortFuncs[columnKey];
+    const key = Object.keys(sorts)[0];
 
-    if (typeof sortFunc === "function") {
-      // slice() makes a shallow copy. Needed because JavaScript sort() is destructive.
-      return rows.slice().sort((rowA, rowB) => {
-        const cellA = rowA[columnKey];
-        const cellB = rowB[columnKey];
-        return sortFunc(cellA, cellB);
-      });
-    } else {
+    if (!key) {
       return rows;
     }
-  }
-
-  static generateFilterFunc(filterText) {
-    const trimmed = filterText.trim().toLowerCase();
-
-    console.log("trimmed", '"', trimmed, '"');
     
-    if (trimmed === "") {
-      return null;
+    const order = sorts[key];
+    const sorter = parsedColumnsByKey[key].sorter;
+
+    // slice() makes a shallow copy. Needed because JavaScript sort() is destructive.
+    const sortedRows = rows.slice().sort((rowA, rowB) => {
+      const a = rowA[key];
+      const b = rowB[key];
+      return sorter(a.cellData, b.cellData, a.parsedCellData, b.parsedCellData);
+    });
+
+    if (order === "desc") {
+      return sortedRows.reverse();
     } else {
-      return cell => {
-        return cell.internalValue.toLowerCase().indexOf(trimmed) >= 0 || cell.displayValue.toLowerCase().indexOf(trimmed) >= 0;
-      };
+      return sortedRows;
     }
   }
 
-  static generateSortFunc(order) {
-    const makeSortFunc = multiplier => {
-      return (cellA, cellB) => {
-        const valA = cellA.internalValue;
-        const valB = cellB.internalValue;
-        if (valA > valB) {
-          return 1 * multiplier;
-        } else if (valA < valB) {
-          return -1 * multiplier;
-        } else {
-          return 0;
-        }
-      };
-    };
+  static generateFilter(string) {
+    const str = string.trim();
     
-    switch (order) {
-    case "asc":
-      return makeSortFunc(1);
-    case "desc":
-      return makeSortFunc(-1);
-    case null:
-      return null;
+    if (str.length === 0) {
+      return undefined;
+    } else {
+      const filter = {};
+      const operator = FILTER_OPERATORS.find(op => str.indexOf(op) === 0);
+      
+      if (operator) {
+        filter.operator = operator;
+        filter.query = str.substring(operator.length);
+      } else {
+        filter.query = str;
+      }
+      
+      return filter;
     }
   }
 }

@@ -13,8 +13,8 @@ export default class HzTable extends React.Component {
     super(props);
     
     this.state = {
-      sortFuncs: {}, // columnKey: function(cellA, cellB) {return int}
-      filterFuncs: {}, // columnKey: function(cell) {return includeThisRow}
+      sorts: {}, // columnKey: "asc" or "desc". Right now, only supporting one column sort at a time!
+      filters: {}, // columnKey: {operator: op, query: string}, op is undefined or "<" or ">"
     };
 
     this.parseRows();
@@ -25,18 +25,17 @@ export default class HzTable extends React.Component {
   }
 
   parseRows() {
-    this.parsedRows = HzTableParser.parseRows(this.props.rows);
+    this.parsedColumns = HzTableParser.parseColumns(this.props.columns, this.props.widgets);
+    this.parsedColumnsByKey = HzTableParser.groupByKey(this.parsedColumns);
+    this.parsedRows = HzTableParser.parseRows(this.props.rows, this.parsedColumns);
   }
   
   prepareRows() {
     // "Prepared rows" are ready to be displayed. The only thing that needs to be done is slicing (for pagination).
     this.preparedRows = this.parsedRows;
 
-    // columns are mutable, and HzTableColumn will set filterFunc and sortFunc on them.
-    // This is probably the wrong way to do it. Maybe state in this component should maintain hashes
-    // of columnKey: sortFunc and columnKey: filterFunc.
-    this.preparedRows = HzTableUtils.filterRows(this.preparedRows, this.state.filterFuncs);
-    this.preparedRows = HzTableUtils.sortRows(this.preparedRows, this.state.sortFuncs);
+    this.preparedRows = HzTableUtils.filterRows(this.preparedRows, this.parsedColumnsByKey, this.state.filters);
+    this.preparedRows = HzTableUtils.sortRows(this.preparedRows, this.parsedColumnsByKey, this.state.sorts);
   }
 
   render() {
@@ -51,7 +50,7 @@ export default class HzTable extends React.Component {
   }
 
   renderThead() {
-    const ths = this.props.columns.map((column, index) => {
+    const ths = this.parsedColumns.map((column, index) => {
       return (
         <HzTableColumn
         column={column}
@@ -86,42 +85,47 @@ export default class HzTable extends React.Component {
       return (
         <HzTableRow
         row={row}
-        columns={this.props.columns}
+        columns={this.parsedColumns}
         key={index}
         />
       );
     });
   }
 
-  handleOrderChanged(column, sortFunc) {
-    if (sortFunc) {
-      this.setState({sortFuncs: {[column.key]: sortFunc}});
+  handleOrderChanged(columnKey, order) {
+    if (order) {
+      this.setState({sorts: {[columnKey]: order}});
     } else {
-      this.setState({sortFuncs: {}});
+      this.setState({sorts: {}});
     }
   }
   
-  handleFilterChanged(column, filterFunc) {
-    const filterFuncs = this.state.filterFuncs;
+  handleFilterChanged(columnKey, filter) {
+    const filters = this.state.filters;
 
-    if (filterFunc) {
-      filterFuncs[column.key] = filterFunc;
+    if (filter) {
+      filters[columnKey] = filter;
     } else {
-      delete filterFuncs[column.key];
+      delete filters[columnKey];
     }
     
-    this.setState({filterFuncs: filterFuncs});
+    this.setState({filters: filters});
   }
 }
 
 HzTable.propTypes = {
   rows: React.PropTypes.array.isRequired,
   columns: React.PropTypes.array.isRequired,
+  
   filterable: React.PropTypes.bool.isRequired,
   sortable: React.PropTypes.bool.isRequired,
+  
+  widgets: React.PropTypes.object,
 };
 
 HzTable.defaultProps = {
   filterable: true,
   sortable: true,
+  
+  widgets: {}, // widgetString: Widget
 };

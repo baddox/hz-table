@@ -9,13 +9,13 @@ const DOWN_ON = '▼';
 const ORDERS = [
   "asc",
   "desc",
-  null,
+  undefined,
 ];
 
 export default class HzTableSorter extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {order: null};
+    this.state = {order: props.order};
   }
   
   render() {
@@ -50,9 +50,7 @@ export default class HzTableSorter extends React.Component {
     const i = ORDERS.indexOf(this.state.order);
     const newOrder = ORDERS[(i + 1) % ORDERS.length];
 
-    const sortFunc = HzTableUtils.generateSortFunc(newOrder);
-
-    this.props.onOrderChanged(sortFunc);
+    this.props.onOrderChanged(newOrder);
     this.setState({order: newOrder});
   }
 }
