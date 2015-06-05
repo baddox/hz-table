@@ -57,6 +57,12 @@ export default class HzTableParser {
     };
   }
 
+  static addSortOrdersToParsedColumns(parsedColumns, sortOrders) {
+    parsedColumns.forEach(column => {
+      column.sortOrder = sortOrders[column.column.key];
+    });
+  }
+
   static groupByKey(parsedColumns) {
     const obj = {};
     parsedColumns.forEach(parsedColumn => obj[parsedColumn.column.key] = parsedColumn);

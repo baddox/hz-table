@@ -11,7 +11,7 @@ export default class HzTable extends React.Component {
     super(props);
     
     this.state = {
-      sorts: {}, // columnKey: "asc" or "desc". Right now, only supporting one column sort at a time!
+      sortOrders: {}, // columnKey: "asc" or "desc". Right now, only supporting one column sort at a time!
       filters: {}, // columnKey: {operator: op, query: string}, op is undefined or "<" or ">"
     };
 
@@ -33,7 +33,9 @@ export default class HzTable extends React.Component {
     this.preparedRows = this.parsedRows;
 
     this.preparedRows = HzTableUtils.filterRows(this.preparedRows, this.parsedColumnsByKey, this.state.filters);
-    this.preparedRows = HzTableUtils.sortRows(this.preparedRows, this.parsedColumnsByKey, this.state.sorts);
+    this.preparedRows = HzTableUtils.sortRows(this.preparedRows, this.parsedColumnsByKey, this.state.sortOrders);
+
+    HzTableParser.addSortOrdersToParsedColumns(this.parsedColumns, this.state.sortOrders);
   }
 
   render() {
@@ -54,6 +56,7 @@ export default class HzTable extends React.Component {
         column={column}
         filterable={this.props.filterable}
         sortable={this.props.sortable}
+        sortOrder={column.sortOrder}
         key={index}
         onOrderChanged={this.handleOrderChanged.bind(this)}
         onFilterChanged={this.handleFilterChanged.bind(this)}
@@ -92,9 +95,9 @@ export default class HzTable extends React.Component {
 
   handleOrderChanged(columnKey, order) {
     if (order) {
-      this.setState({sorts: {[columnKey]: order}});
+      this.setState({sortOrders: {[columnKey]: order}});
     } else {
-      this.setState({sorts: {}});
+      this.setState({sortOrders: {}});
     }
   }
   

@@ -13,17 +13,12 @@ const ORDERS = [
 ];
 
 export default class HzTableSorter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {order: props.order};
-  }
-  
   render() {
     let symbols;
 
-    if (this.state.order === "asc") {
+    if (this.props.sortOrder === "asc") {
       symbols = UP_ON + DOWN_OFF;
-    } else if (this.state.order === "desc") {
+    } else if (this.props.sortOrder === "desc") {
       symbols = UP_OFF + DOWN_ON;
     } else {
       symbols = UP_OFF + DOWN_OFF;
@@ -47,15 +42,15 @@ export default class HzTableSorter extends React.Component {
   handleChange(event) {
     event.preventDefault();
     
-    const i = ORDERS.indexOf(this.state.order);
+    const i = ORDERS.indexOf(this.props.sortOrder);
     const newOrder = ORDERS[(i + 1) % ORDERS.length];
 
     this.props.onOrderChanged(newOrder);
-    this.setState({order: newOrder});
   }
 }
 
 HzTableSorter.propTypes = {
+  sortOrder: React.PropTypes.oneOf(ORDERS),
   onOrderChanged: React.PropTypes.func.isRequired,
 };
 

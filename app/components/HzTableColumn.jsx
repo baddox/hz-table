@@ -24,7 +24,8 @@ export default class HzTableColumn extends React.Component {
   }
 
   renderSorter() {
-    return this.getOption("sortable") ? <HzTableSorter order={this.props.column.column.defaultSort} onOrderChanged={this.props.onOrderChanged.bind(this, this.props.column.column.key)} /> : null;
+    const sortOrder = (typeof this.props.sortOrder === "string") ? this.props.sortOrder : this.props.column.column.defaultSortOrder;
+    return this.getOption("sortable") ? <HzTableSorter sortOrder={sortOrder} onOrderChanged={this.props.onOrderChanged.bind(this, this.props.column.column.key)} /> : null;
   }
 
   renderFilter() {
@@ -48,6 +49,7 @@ export default class HzTableColumn extends React.Component {
 HzTableColumn.propTypes = {
   filterable: React.PropTypes.bool.isRequired,
   sortable: React.PropTypes.bool.isRequired,
+  sortOrder: React.PropTypes.string,
   onOrderChanged: React.PropTypes.func.isRequired,
   onFilterChanged: React.PropTypes.func.isRequired,
 };
