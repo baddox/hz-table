@@ -1,5 +1,5 @@
 import React from 'react';
-import HzTableCell from '../HzTableCell';
+import HzTableCell from './HzTableCell';
 
 export default class HzTableRow extends React.Component {
   render() {

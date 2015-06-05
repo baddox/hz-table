@@ -1,5 +1,5 @@
 import React from 'react';
-import HzTableUtils from '../HzTableUtils';
+import HzTableUtils from './HzTableUtils';
 
 const UP_OFF = '△';
 const UP_ON = '▲';

@@ -1,12 +1,10 @@
 import React from 'react';
 
-import HzTableRow from '../HzTableRow';
-import HzTableColumn from '../HzTableColumn';
+import HzTableRow from './HzTableRow';
+import HzTableColumn from './HzTableColumn';
 
-import HzTableParser from '../HzTableParser';
-import HzTableUtils from '../HzTableUtils';
-
-import HzTableUtils2 from '../HzFoo';
+import HzTableParser from './HzTableParser';
+import HzTableUtils from './HzTableUtils';
 
 export default class HzTable extends React.Component {
   constructor(props) {

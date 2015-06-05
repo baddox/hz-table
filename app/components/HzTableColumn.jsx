@@ -1,6 +1,6 @@
 import React from 'react';
-import HzTableSorter from '../HzTableSorter';
-import HzTableUtils from '../HzTableUtils';
+import HzTableSorter from './HzTableSorter';
+import HzTableUtils from './HzTableUtils';
 
 // This is actually a th that goes in a tr of a thead
 export default class HzTableColumn extends React.Component {
