@@ -1,15 +1,9 @@
-require("babel/register");
-
 import React from 'react';
-import HzTable from '../HzTable';
-import UserWidget from '../widgets/UserWidget';
-import MoneyWidget from '../widgets/MoneyWidget';
-import DateWidget from '../widgets/DateWidget';
 
-/*
-  Component specific stylesheet
-  Can also use .less, .scss, or plain .css files here
-*/
+import HzTable from '../../HzTable';
+import UserWidget from '../../widgets/UserWidget';
+import MoneyWidget from '../../widgets/MoneyWidget';
+import DateWidget from '../../widgets/DateWidget';
 
 const rows = [
   {
@@ -117,3 +111,38 @@ export default class Application extends React.Component {
     );
   }
 }
+
+export default class CustomRendering extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+    };
+  }
+  
+  render() {
+    return (
+      <div>
+        <h2>Custom Rendering</h2>
+        <div>
+          <HzTable
+          rows={rows}
+          columns={columns}
+          widgets={widgets}
+          filterable={false}
+          className="pure-table"
+          />
+        </div>
+      </div>
+
+    );
+  }
+};
+
+CustomRendering.propTypes = {
+  foo: React.PropTypes.bool.isRequired,
+};
+
+CustomRendering.defaultProps = {
+  foo: true,
+};

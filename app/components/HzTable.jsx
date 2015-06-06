@@ -42,7 +42,7 @@ export default class HzTable extends React.Component {
     this.prepareRows();
     
     return (
-      <table className="pure-table">
+      <table className={this.props.className}>
         {this.renderThead()}
         {this.renderTbody()}
       </table>
@@ -122,6 +122,8 @@ HzTable.propTypes = {
   sortable: React.PropTypes.bool.isRequired,
   
   widgets: React.PropTypes.object,
+
+  className: React.PropTypes.string,
 };
 
 HzTable.defaultProps = {

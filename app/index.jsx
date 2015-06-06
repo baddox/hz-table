@@ -4,6 +4,9 @@ require('./css/pure.css');
 require('./css/base.sass');
 
 import React from 'react';
-import Application from './components/Application';
+import Router from 'react-router';
+import routes from './components/Application/routes';
 
-React.render(<Application />, document.getElementById('app'));
+Router.run(routes, function (Handler) {
+  React.render(<Handler/>, document.getElementById('app'));
+});
