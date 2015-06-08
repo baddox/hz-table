@@ -24,15 +24,85 @@ module.exports = function(options) {
 
   var jsLoaders = ['babel'];
 
-  return {
-    entry: './app/index.jsx',
-    debug: !options.production,
-    devtool: options.devtool,
-    output: {
-      path: options.production ? './dist' : './build',
-      publicPath: options.production ? '' : 'http://localhost:8080/',
-      filename: options.production ? 'app.[hash].js' : 'app.js',
+  // Look at the options and figure out what's really going on. :)
+  var site = options.site;
+  var library = !options.site;
+  var productionSite = options.site && options.production;
+  var developmentSite = options.site && !options.production;
+  
+  var path;
+  var filename;
+  if (site) {
+    path = productionSite ? './site-dist' : './site-build';
+    filename = productionSite ? 'app.[hash].js' : 'app.js';
+  } else {
+    path = './library-build';
+    filename = 'HzTable.min.js';
+  }
+  
+  var output = {
+    path: path,
+    publicPath: productionSite ? '' : 'http://localhost:8080/',
+    filename: filename,
+  };
+
+  if (library) {
+    output.libraryTarget = "umd";
+    output.library = "HzTable";
+  }
+
+  // Important to keep React file size down
+  var definePlugin = new webpack.DefinePlugin({
+    "process.env": {
+      "NODE_ENV": JSON.stringify("production"),
     },
+  });
+  var developmentHtmlWebpackPlugin = new HtmlWebpackPlugin({
+      template: './conf/tmpl.html',
+    });
+  var productionHtmlWebpackPlugin = new HtmlWebpackPlugin({
+    template: './conf/tmpl.html',
+    production: true,
+  });
+  var dedupePlugin = new webpack.optimize.DedupePlugin();
+  var uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false,
+    },
+  });
+  var extractTextPlugin = new ExtractTextPlugin("app.[hash].css");
+
+  var plugins;
+
+  if (developmentSite) {
+    plugins = [developmentHtmlWebpackPlugin];
+  } else if (productionSite) {
+    plugins = [productionHtmlWebpackPlugin, dedupePlugin, uglifyJsPlugin, extractTextPlugin];
+  } else if (library) {
+    plugins = [dedupePlugin, uglifyJsPlugin];
+  } else {
+    throw "Must be either development site, production site, or library build.";
+  }
+
+  var externals;
+
+  if (library) {
+    externals = [{
+      react: {
+        root: 'React',
+        commonjs2: 'react',
+        commonjs: 'react',
+        amd: 'react'
+      }
+    }];
+  }
+
+  return {
+    entry: site ? './app/index.jsx' : './app/components/HzTable.jsx',
+    debug: developmentSite,
+    devtool: options.devtool,
+    output: output,
+    externals: externals,
     module: {
       preLoaders: options.lint ? [
         {
@@ -50,7 +120,7 @@ module.exports = function(options) {
         {
           test: /\.jsx$/,
           exclude: /node_modules/,
-          loaders: options.production ? jsLoaders : ['react-hot'].concat(jsLoaders),
+          loaders: developmentSite ? ['react-hot'].concat(jsLoaders) : jsLoaders,
         },
         {
           test: /\.css$/,
@@ -89,28 +159,6 @@ module.exports = function(options) {
     resolve: {
       extensions: ['', '.js', '.jsx'],
     },
-    plugins: options.production ? [
-      // Important to keep React file size down
-      new webpack.DefinePlugin({
-        "process.env": {
-          "NODE_ENV": JSON.stringify("production"),
-        },
-      }),
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false,
-        },
-      }),
-      new ExtractTextPlugin("app.[hash].css"),
-      new HtmlWebpackPlugin({
-        template: './conf/tmpl.html',
-        production: true,
-      }),
-    ] : [
-      new HtmlWebpackPlugin({
-        template: './conf/tmpl.html',
-      }),
-    ],
+    plugins: plugins,
   };
 };
